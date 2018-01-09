@@ -28,12 +28,7 @@ namespace NetToSerial.com
         /// </summary>
         Dictionary<int, IoClient> mDictClient=new Dictionary<int, IoClient>();
 
-        private static long mID=0;
-        public static long GetID()
-        {
-            return mID++;
-        }
-
+      
 
     }
 }

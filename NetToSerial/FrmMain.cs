@@ -111,14 +111,14 @@ namespace NetToSerial
 
         }
 
-        public void SessionClosed(IoSession session)
+        public void SessionClosed(IoHeader header)
         {
-            System.Diagnostics.Debug.WriteLine("SessionClosed:" + session.ToString());
+            System.Diagnostics.Debug.WriteLine("SessionClosed:" + header.ToString());
         }
 
-        public void SessionOpened(IoSession session)
+        public void SessionOpened(IoHeader header)
         {
-            System.Diagnostics.Debug.WriteLine("SessionOpened:" + session.ToString());
+            System.Diagnostics.Debug.WriteLine("SessionOpened:" + header.ToString());
         }
 
         public void ConnectOpened(IoState state)
@@ -144,6 +144,16 @@ namespace NetToSerial
         public void SessionException(Object o, Exception ex)
         {
             System.Diagnostics.Debug.WriteLine("SessionException:" + ex.Message+","+o.ToString());
+        }
+
+        public void Start()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Stop()
+        {
+            throw new NotImplementedException();
         }
     }
 }

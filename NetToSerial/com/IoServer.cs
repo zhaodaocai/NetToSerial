@@ -7,7 +7,7 @@ using System.Text;
 
 namespace com
 {
-    public class IoServer : IoSession,IoHeader
+    public class IoServer : IoHeader
     {
         private IoHeader mHeader = null;
         private IPAddress mAddress; 
@@ -69,14 +69,14 @@ namespace com
             }
         }
 
-        public void SessionClosed(IoSession session)
+        public void SessionClosed(IoHeader header)
         {
-            mHeader.SessionClosed(session);
+            mHeader.SessionClosed(header);
         }
 
-        public void SessionOpened(IoSession session)
+        public void SessionOpened(IoHeader header)
         {
-            mHeader.SessionOpened(session);
+            mHeader.SessionOpened(header);
         }
 
         public void MessageReceived(IoState state, byte[] message)

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace com
 {
-    public class IoSerial :IoSession,IoHeader
+    public class IoSerial : IoHeader
     {
         private IoHeader mHeader = null;
         private SerialPort mSerialPort=new SerialPort();
@@ -68,13 +68,14 @@ namespace com
             }
         }
 
-        public void SessionClosed(IoSession session)
+        public void SessionClosed(IoHeader header)
         {
             throw new NotImplementedException();
         }
 
-        public void SessionOpened(IoSession session)
+        public void SessionOpened(IoHeader header)
         {
+
             throw new NotImplementedException();
         }
 
@@ -83,7 +84,7 @@ namespace com
             throw new NotImplementedException();
         }
 
-        public void ConnectClosed(IoSession session)
+        public void ConnectClosed(IoHeader header)
         {
             throw new NotImplementedException();
         }

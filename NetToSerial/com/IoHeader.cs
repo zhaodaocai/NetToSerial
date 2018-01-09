@@ -10,14 +10,14 @@ namespace com
         /// <summary>
         /// 用于串口或者网络服务的关闭
         /// </summary>
-        /// <param name="session"></param>
-        void SessionClosed(IoSession session);
+        /// <param name="header"></param>
+        void SessionClosed(IoHeader header);
 
         /// <summary>
         /// 用于串口或者网络服务的关闭
         /// </summary>
-        /// <param name="session"></param>
-        void SessionOpened(IoSession session);
+        /// <param name="header"></param>
+        void SessionOpened(IoHeader header);
 
         /// <summary>
         /// 用于网络服务接收的新连接
@@ -50,7 +50,17 @@ namespace com
         /// </summary>
         /// <param name="o"></param>
         /// <param name="ex"></param>
-        void SessionException(Object o, Exception ex); 
+        void SessionException(Object o, Exception ex);
+
+        /// <summary>
+        /// 启动命令
+        /// </summary>
+        void Start();
+
+        /// <summary>
+        /// 停止命令
+        /// </summary>
+        void Stop();
 
     }
 }

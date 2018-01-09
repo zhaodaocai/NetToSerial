@@ -7,7 +7,7 @@ using System.Text;
 
 namespace com
 {
-    public class IoClient : IoSession, IoHeader
+    public class IoClient : IoHeader
     {
         private IPAddress mAddress;
         private int mPort;
@@ -71,9 +71,9 @@ namespace com
             mHeader.MessageSent(state, message);
         }
 
-        public void SessionClosed(IoSession session)
+        public void SessionClosed(IoHeader header)
         {
-            mHeader.SessionClosed(session);
+            mHeader.SessionClosed(header);
         }
 
         public void SessionException(Object o, Exception ex)
@@ -81,9 +81,9 @@ namespace com
             mHeader.SessionException(o, ex);
         }
 
-        public void SessionOpened(IoSession session)
+        public void SessionOpened(IoHeader header)
         {
-            mHeader.SessionOpened(session);
+            mHeader.SessionOpened(header);
         }
   
     }
