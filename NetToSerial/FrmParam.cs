@@ -16,13 +16,7 @@ namespace NetToSerial
         public static String xmlFile = System.Windows.Forms.Application.StartupPath + "\\config.xml";
         const String mTableName = "param";
 
-        DataTable mTableSerial=new DataTable("Serial");
-        DataTable mTableServer=new DataTable("Server");
-        DataTable mTableClient = new DataTable("Client");
-        DataTable mTableRelay = new DataTable("Relay");
         DataSet mDataSet = new DataSet();
-
-        private List<DataGridView> mGrids=new List<DataGridView>();
 
         public FrmParam()
         {
@@ -211,7 +205,7 @@ namespace NetToSerial
         }
 
         /// <summary>
-        /// 表格控件内容转换为数据表内容
+        /// 表格控件内容转换为数据表内容,数据表名称=表格名称 ,数据列名称=表格列名称
         /// </summary>
         /// <param name="grid"></param>
         /// <returns></returns>
@@ -231,12 +225,20 @@ namespace NetToSerial
             }
             return dt;
         }
-        
+
+        DataGridView[] GetDataGridViews()
+        {
+            DataGridView[] ret = { GridSerial, GridServer, GridClient, GridRelay };
+            return ret;
+        }
+
 
         private void WndOK_Click(object sender, EventArgs e)
         {
+            DataGridView[] grids = GetDataGridViews();
+
             DataSet ds = new DataSet();
-            foreach (DataGridView item in mGrids)
+            foreach (DataGridView item in grids)
             {
                 if (item.EditingControl != null)
                 {
@@ -260,29 +262,21 @@ namespace NetToSerial
 
         private void FrmParam_Load(object sender, EventArgs e)
         {
-            mGrids.Add(GridSerial);
-            mGrids.Add(GridServer);
-            mGrids.Add(GridClient);
-            mGrids.Add(GridRelay);
-
-
+ 
             TabParam.Dock = DockStyle.Fill;
-            GridServer.Dock = DockStyle.Fill;
-            GridSerial.Dock= DockStyle.Fill;
-            GridClient.Dock = DockStyle.Fill;
-            GridRelay.Dock = DockStyle.Fill;
-
-            GridServer.AutoGenerateColumns = false;
-            GridClient.AutoGenerateColumns = false;
-            GridSerial.AutoGenerateColumns = false;
-            GridRelay.AutoGenerateColumns = false;
-
             mDataSet = ReadXml();
-            DataTable dt1, dt2, dt3,dt4;
-            if (mDataSet != null)
+            DataGridView[] grids = GetDataGridViews();
+            foreach (DataGridView item in grids)
             {
+                item.Dock = DockStyle.Fill;
+                item.AutoGenerateColumns = false;
+                DataTable dt = mDataSet.Tables[item.Name];
+                if (dt == null)
+                {
+                    dt = CreateTable(item);
+                }
+                item.DataSource = dt;
             }
-           
 
         }
 
@@ -319,6 +313,11 @@ namespace NetToSerial
         {
             RowStateChanged(sender as DataGridView);
         }
+        /// <summary>
+        /// 重新设置右键菜单内容 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MenuSerial_Opening(object sender, CancelEventArgs e)
         {
             ContextMenuStrip menu = sender as ContextMenuStrip;
