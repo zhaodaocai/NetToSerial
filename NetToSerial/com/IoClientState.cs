@@ -11,19 +11,21 @@ namespace com
     {
         private TcpClient mTcpClient;
 
-        public IoClientState(IoHeader header, Stream stream,int bufferSize) : base(header, stream,bufferSize)
+        public IoClientState(IoHeader header, int bufferSize) : base(header, bufferSize)
         {
-
+           
         }
 
-        public IoClientState(IoHeader header,Stream stream,int bufferSize,TcpClient tcpClient):base(header,stream,bufferSize)
+        public IoClientState(IoHeader header, int bufferSize, TcpClient tcpClient) : base(header, bufferSize)
         {
             mTcpClient = tcpClient;
         }
 
         public override string ToString()
         {
-            return mTcpClient.ToString();
+            return mTcpClient.Client.ToString();
         }
+
+       
     }
 }

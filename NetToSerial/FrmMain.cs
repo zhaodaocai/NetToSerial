@@ -1,10 +1,11 @@
 ﻿using com;
-
+using NetToSerial.com;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -36,64 +37,73 @@ namespace NetToSerial
 
         private void wndStart_Click(object sender, EventArgs e)
         {
-           
-            
+            //表集合
+            DataSet ds = FrmParam.ReadDataSet();
 
-            
-            //List<RunParam> rps = new List<RunParam>();
-            //RunParam rp;
-            //if (mRelayServer == null)
-            //{
-            //    LogInfo.Out(null);
-            //    DataTable dt = GetGridSource();
-            //    foreach(DataRow dr in dt.Rows)
-            //    {
-            //        try
-            //        {
-            //            Object oSelect = dr["ColSelect"];
-            //            rp = new RunParam(dr);
-            //            if (rp.mSelect)
-            //            {
-            //                rps.Add(rp);
-            //            }
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            LogInfo.Err("获取参数异常:"+ex.Message);
-            //            return;
-            //        }
-            //    }
-            //    mRelayServer = new RelayServer();
-            //    mRelayServer.setValue(rps);
-            //    mRelayServer.IStart();
-            //    LogInfo.Out("已执行启动");
-            //}
-            //else
-            //{
-            //    LogInfo.Err("重复启动");
-            //}
+            //串口
+            DataTable tableSerial = ds.Tables[FrmParam.s_GridSerial];
+            DataTable tableServer = ds.Tables[FrmParam.s_GridServer];
+            DataTable tableClient = ds.Tables[FrmParam.s_GridClient];
+            DataTable tableRelay = ds.Tables[FrmParam.s_GridRelay];
+            if (tableSerial != null)
+            {
+                foreach(DataRow dr in tableSerial.Rows)
+                {
+                    SerialRow sr = new SerialRow(dr);
+                    if (sr.select)
+                    {
+                        SerialPort sp = new SerialPort("COM" + sr.port, sr.baud, (Parity)sr.parity);
+                        IoSerial serial = new IoSerial(RelayServer.GetID(), sp, this);
+                        
+                        RelayServer.GetInstance().AddHeader(serial);
+                    }
+                }
+            }
 
+            if (tableServer != null)
+            {
+                foreach (DataRow dr in tableServer.Rows)
+                {
+                    ServerRow sr = new ServerRow(dr);
+                    if (sr.select)
+                    {
+                        IoServer server = new IoServer(RelayServer.GetID(), sr.ip, sr.port, this);
+                        RelayServer.GetInstance().AddHeader(server);
+                    }
+                }
+            }
+
+            if (tableClient != null)
+            {
+                foreach (DataRow dr in tableClient.Rows)
+                {
+                    ClientRow sr = new ClientRow(dr);
+                    if (sr.select)
+                    {
+                        IoClient client = new IoClient(RelayServer.GetID(), sr.ip, sr.port, this);
+                        RelayServer.GetInstance().AddHeader(client);
+                    }
+                }
+            }
+
+            if (tableRelay != null)
+            {
+                foreach (DataRow dr in tableRelay.Rows)
+                {
+                    RelayRow sr = new RelayRow(dr);
+                    if (sr.select)
+                    {
+                        RelayServer.GetInstance().AddRelay(sr.id1, sr.id2);
+                    }
+                }
+            }
+
+            RelayServer.GetInstance().Start();
         }
 
         private void wndStop_Click(object sender, EventArgs e)
         {
-            //try
-            //{
-            //    if (mRelayServer != null)
-            //    {
-            //        mRelayServer.IStop();
-            //        mRelayServer = null;
-            //        Log.Out("已执行关闭");
-            //    }
-            //    else
-            //    {
-            //        Log.Err("未启动,无需关闭");
-            //    }
-            //}
-            //catch(Exception ex)
-            //{
-            //    Log.Err("停止异常:" + ex.Message);
-            //}
+            RelayServer.GetInstance().Stop();
         }
 
         private void wndClear_Click(object sender, EventArgs e)
@@ -104,45 +114,49 @@ namespace NetToSerial
         private void wndParam_Click(object sender, EventArgs e)
         {
             FrmParam frm = new FrmParam();
-            if (frm.ShowDialog()==DialogResult.OK)
-            {
-                //DataTable dt = frm.GetDataTable();
-            }
-
+            frm.ShowDialog();
         }
 
         public void SessionClosed(IoHeader header)
         {
+            Log.Info(Color.Black, "SessionClosed:" + header.ToString());
             System.Diagnostics.Debug.WriteLine("SessionClosed:" + header.ToString());
         }
 
         public void SessionOpened(IoHeader header)
         {
+            Log.Info(Color.Black, "SessionOpened:"+header.ToString());
             System.Diagnostics.Debug.WriteLine("SessionOpened:" + header.ToString());
         }
 
         public void ConnectOpened(IoState state)
         {
+            Log.Info(Color.Black, "ConnectOpened:"+state.ToString());
             System.Diagnostics.Debug.WriteLine("ConnectOpened:" + state.ToString());
         }
 
         public void ConnectClosed(IoState state)
         {
+            Log.Info(Color.Black, "ConnectClosed:" + state.ToString());
             System.Diagnostics.Debug.WriteLine("ConnectClosed:" + state.ToString());
         }
 
         public void MessageReceived(IoState state, byte[] message)
         {
+            Log.Info(Color.Black, "RX:" + STR.toString(message));
             System.Diagnostics.Debug.WriteLine("MessageReceived:" + state.ToString());
         }
 
         public void MessageSent(IoState state, byte[] message)
         {
+            Log.Info(Color.Blue,"TX:" + STR.toString(message));
+
             System.Diagnostics.Debug.WriteLine("MessageSent:"+state.ToString());
         }
 
         public void SessionException(Object o, Exception ex)
         {
+            Log.Info(Color.Red, "异常信息;" + ex.Message);
             System.Diagnostics.Debug.WriteLine("SessionException:" + ex.Message+","+o.ToString());
         }
 
@@ -152,6 +166,16 @@ namespace NetToSerial
         }
 
         public void Stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetReadBuffer(int size)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetID()
         {
             throw new NotImplementedException();
         }

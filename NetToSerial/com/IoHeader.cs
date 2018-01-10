@@ -52,6 +52,10 @@ namespace com
         /// <param name="ex"></param>
         void SessionException(Object o, Exception ex);
 
+        void SetReadBuffer(int size);
+
+        int GetID();
+        
         /// <summary>
         /// 启动命令
         /// </summary>
@@ -61,6 +65,7 @@ namespace com
         /// 停止命令
         /// </summary>
         void Stop();
+
 
     }
 }

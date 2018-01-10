@@ -12,11 +12,10 @@ namespace com
         private IoHeader mHeader = null;
         private IPAddress mAddress; 
         private int mPort;
-        private int mBufferSize;
+        private int mBufferSize=1024;
         private TcpListener mTcpListener;
         private List<IoState> mSessions = new List<IoState>();
-
-        private long mID;
+        private int mID;
 
         /// <summary>
         /// 
@@ -25,22 +24,24 @@ namespace com
         /// <param name="ip"></param>
         /// <param name="port"></param>
         /// <param name="bufferSize"> 客户端数据缓冲区大小</param>
-        public IoServer(long id,IoHeader header, String ip, int port,int bufferSize)
+        public IoServer(int id,String ip, int port,IoHeader header)
         {
             mID = id;
-            mBufferSize = bufferSize;
             mHeader = header;
             mPort = port;
             mAddress = IPAddress.Parse(ip);
         }
 
-        public long GetID()
+        public int GetID()
         {
             return mID;
         }
 
 
-        
+        public override string ToString()
+        {
+            return String.Format("[{0},{1}:{2}]",mID, mAddress.ToString(),mPort);
+        }
 
         public void Stop()
         {
@@ -61,6 +62,7 @@ namespace com
                     mTcpListener.Start();
                     IoAcceptState state = new IoAcceptState(mHeader, mTcpListener,mBufferSize);
                     state.BeginAcceptTcpClient();
+                    mHeader.SessionOpened(this);
                 }
                 catch (Exception ex)
                 {
@@ -104,6 +106,11 @@ namespace com
         {
             mSessions.Remove(state);
             mHeader.ConnectClosed(state);
+        }
+
+        public void SetReadBuffer(int size)
+        {
+            mBufferSize = size;
         }
     }
 }

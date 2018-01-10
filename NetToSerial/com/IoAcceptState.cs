@@ -31,7 +31,6 @@ namespace com
 
         internal void BeginAcceptTcpClient()
         {
-           
             mTcpListener.BeginAcceptTcpClient(new AsyncCallback(DoAcceptTcpClient), this);
         }
 
@@ -42,10 +41,10 @@ namespace com
             try
             {
                 TcpClient client = acceptState.EndAcceptTcpClient(ar);
-                IoClientState sockState = new IoClientState(acceptState.mHeader, client.GetStream(),acceptState.mBufferSize,client);
+                IoClientState sockState = new IoClientState(acceptState.mHeader,acceptState.mBufferSize,client);
                 acceptState.mHeader.ConnectOpened(sockState); //接收到连接消息
+                sockState.SetStream(client.GetStream());
                 sockState.BeginRead();
-
                 acceptState.BeginAcceptTcpClient();
             }
             catch (Exception ex)

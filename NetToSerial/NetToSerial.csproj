@@ -81,6 +81,7 @@
     <Compile Include="FrmParam.Designer.cs">
       <DependentUpon>FrmParam.cs</DependentUpon>
     </Compile>
+    <Compile Include="ParamRow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RunParam.cs" />

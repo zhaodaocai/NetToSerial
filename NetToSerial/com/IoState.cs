@@ -6,18 +6,15 @@ using System.Text;
 
 namespace com
 {
-    abstract public class IoState 
+    abstract public class IoState  : Object
     {
         private byte[] mBuffer;
         private Stream mStream;
-        private AsyncCallback mReadCallBack=new AsyncCallback(ReadCallBack);
         public IoHeader mHeader;
-
-        public IoState(IoHeader header,Stream stream,int bufferSize)
+        public IoState(IoHeader header,int bufferSize)
         {
             mBuffer = new byte[bufferSize];
             mHeader = header;
-            mStream = stream;
         }
 
         public byte[] GetBuffer()
@@ -30,9 +27,14 @@ namespace com
             return mStream;
         }
 
+        public void SetStream(Stream stream)
+        {
+            mStream = stream;
+        }
+
         public IAsyncResult BeginRead()
         {
-            return mStream.BeginRead(mBuffer, 0, mBuffer.Length, mReadCallBack, this);
+            return mStream.BeginRead(mBuffer, 0, mBuffer.Length, new AsyncCallback(ReadCallBack), this);
         }
 
         internal int EndRead(IAsyncResult iar)
@@ -43,19 +45,52 @@ namespace com
         private static void ReadCallBack(IAsyncResult iar)
         {
             IoState state = iar.AsyncState as IoState;
-            int NumOfBytesRead;
-            NumOfBytesRead = state.EndRead(iar);
-            if (NumOfBytesRead > 0)
+            int NumOfBytesRead = 0;
+            try
             {
-                byte[] buffer = new byte[NumOfBytesRead];
-                Array.Copy(state.GetBuffer(), buffer, NumOfBytesRead);
-                state.mHeader.MessageReceived(state, buffer);
-                state.BeginRead();
+                NumOfBytesRead = state.EndRead(iar);
+                if (NumOfBytesRead > 0)
+                {
+                    NumOfBytesRead=state.ReadData(NumOfBytesRead);
+
+                    byte[] buffer = new byte[NumOfBytesRead];
+                    Array.Copy(state.GetBuffer(), buffer, NumOfBytesRead);
+                    state.mHeader.MessageReceived(state, buffer);
+                    state.BeginRead();
+                }
+                else
+                {
+                    state.mHeader.ConnectClosed(state); //连接断开
+                }
             }
-            else
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
                 state.mHeader.ConnectClosed(state); //连接断开
             }
+        }
+
+        private int ReadData(int offset)
+        {
+            int ret = offset;
+            if (mStream.ReadTimeout > 0)
+            {
+                int readCount = 1;
+                while (readCount>0)
+                {
+                    try
+                    {
+                        readCount = mStream.Read(mBuffer, ret, mBuffer.Length - ret);
+                        ret += readCount;
+                    }
+                    catch(TimeoutException ex)
+                    {
+                        ex.Source = null;
+                        break;
+                    }
+                }
+            }
+            return ret;
         }
     }
 }

@@ -12,6 +12,10 @@ namespace NetToSerial
 {
     public partial class FrmParam : Form
     {
+        public const String s_GridSerial = "GridSerial";
+        public const String s_GridServer = "GridServer";
+        public const String s_GridClient = "GridClient";
+        public const String s_GridRelay =  "GridRelay";
 
         public static String xmlFile = System.Windows.Forms.Application.StartupPath + "\\config.xml";
         const String mTableName = "param";
@@ -24,7 +28,7 @@ namespace NetToSerial
         }
       
 
-        public static DataSet ReadXml()
+        public static DataSet ReadDataSet()
         {
             DataSet ret = new DataSet();
             if (System.IO.File.Exists(xmlFile))
@@ -54,7 +58,7 @@ namespace NetToSerial
         {
             DataGridView grid = GetSelect();
             
-            if (grid.EditingControl != null)
+            if (grid.IsCurrentCellInEditMode)
             {
                 grid.EndEdit();
             }
@@ -174,12 +178,14 @@ namespace NetToSerial
         {
             int cols = dgRow.Cells.Count;
             DataGridViewCell dgCell;
-            for(int i = 0; i < cols; i++)
+            Object cellValue;
+            for (int i = 0; i < cols; i++)
             {
                 dgCell = dgRow.Cells[i];
-                if (dgCell.ValueType == typeof(Boolean))
+                cellValue = dgCell.Value;
+                if (cellValue == null || cellValue.GetType()==typeof(DBNull))
                 {
-                    dtRow[i] = dgCell.Selected;
+                    dtRow[i] = dgCell.Style.NullValue;// .OwningColumn.CellTemplate.Style.NullValue;
                 }
                 else
                 {
@@ -199,7 +205,25 @@ namespace NetToSerial
             int count=grid.ColumnCount;
             for(int i = 0; i < count; i++)
             {
-                ret.Columns.Add(grid.Columns[i].Name);
+                //DataGridViewColumn column = grid.Columns[i];
+                //Type ct = column.CellType;
+                //if (ct == typeof(DataGridViewCheckBoxCell))
+                //{
+                //    ret.Columns.Add(grid.Columns[i].Name, typeof(Boolean));
+                //}
+                //else
+                //{
+                //    ret.Columns.Add(grid.Columns[i].Name);
+                //}
+                if (i == 0)
+                {
+                    ret.Columns.Add(grid.Columns[i].Name,typeof(Boolean));
+                }
+                else
+                {
+                    ret.Columns.Add(grid.Columns[i].Name);
+                }
+
             }
             return ret;
         }
@@ -233,14 +257,13 @@ namespace NetToSerial
         }
 
 
-        private void WndOK_Click(object sender, EventArgs e)
+        private void OnSave()
         {
             DataGridView[] grids = GetDataGridViews();
-
             DataSet ds = new DataSet();
             foreach (DataGridView item in grids)
             {
-                if (item.EditingControl != null)
+                if (item.IsCurrentCellInEditMode)
                 {
                     item.EndEdit();  //更新编辑
                 }
@@ -248,6 +271,11 @@ namespace NetToSerial
                 ds.Tables.Add(dt);
             }
             ds.WriteXml(xmlFile, XmlWriteMode.WriteSchema);
+        }
+
+        private void WndOK_Click(object sender, EventArgs e)
+        {
+            OnSave();
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
@@ -264,7 +292,7 @@ namespace NetToSerial
         {
  
             TabParam.Dock = DockStyle.Fill;
-            mDataSet = ReadXml();
+            mDataSet = ReadDataSet();
             DataGridView[] grids = GetDataGridViews();
             foreach (DataGridView item in grids)
             {
@@ -358,6 +386,11 @@ namespace NetToSerial
         private void GridRelay_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
 
+        }
+
+        private void wndSave_Click(object sender, EventArgs e)
+        {
+            OnSave();
         }
     }
 }

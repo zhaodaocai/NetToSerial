@@ -11,24 +11,91 @@ namespace NetToSerial.com
 {
     class RelayServer
     {
-
+        /// <summary>
+        /// 通信集合
+        /// </summary>
+        private Dictionary<int, IoHeader> mHeaders=new Dictionary<int, IoHeader>();
 
         /// <summary>
-        /// 串口列表
+        /// 转发列表
         /// </summary>
-        Dictionary<int, IoSerial> mDictSerial=new Dictionary<int, IoSerial>();
+        private Dictionary<int, List<int>> mRelays = new Dictionary<int, List<int>>();
+
+        private static int mID = 0;
+        private static RelayServer mRelayServer = new RelayServer();
+        private RelayServer()
+        {
+
+        }
+
+        public static int GetID()
+        {
+            return mID++;
+        }
+        
+        public static RelayServer GetInstance()
+        {
+            return mRelayServer;
+        }
+
+        public void AddHeader(IoHeader header)
+        {
+            int id = header.GetID();
+            mHeaders[id] = header;
+        }
 
         /// <summary>
-        /// TCP服务端列表
+        /// 增加转发列表
         /// </summary>
-        Dictionary<int, IoServer> mDictServer=new Dictionary<int, IoServer>();
+        /// <param name="id1"></param>
+        /// <param name="id2"></param>
+        public void AddRelay(int id1,int id2)
+        {
+            AddRelay1(id1, id2);
+            AddRelay1(id2, id1);
+        }
 
         /// <summary>
-        /// TCP客户端列表
+        /// 增加ID1
         /// </summary>
-        Dictionary<int, IoClient> mDictClient=new Dictionary<int, IoClient>();
+        /// <param name="id1"></param>
+        /// <param name="id2"></param>
+        private void AddRelay1(int id1, int id2)
+        {
+            List<int> ids = mRelays[id1];
+            if (ids == null)
+            {
+                ids = new List<int>();
+                ids.Add(id2);
+                mRelays[id1] = ids;
+            }
+            else
+            {
+                ids.Add(id2);
+            }
+        }
 
-      
+        internal void Start()
+        {
+            lock (this)
+            {
+                foreach (IoHeader item in mHeaders.Values)
+                {
+                    item.Start();
+                }
+            }
+        }
 
+        internal void Stop()
+        {
+            lock (this)
+            {
+                foreach (IoHeader item in mHeaders.Values)
+                {
+                    item.Stop();
+                }
+                mHeaders.Clear();
+            }
+        }
     }
 }

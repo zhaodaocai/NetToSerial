@@ -17,12 +17,14 @@ namespace com
         }
 
 
-        public IoSerialState(IoHeader header, Stream stream, int bufferSize) : base(header, stream,bufferSize)
+        public IoSerialState(IoHeader header, Stream stream, int bufferSize) : base(header, bufferSize)
         {
+            this.SetStream(stream);
         }
 
-        public IoSerialState(IoHeader header, Stream stream, int bufferSize,SerialPort serialPort) :base(header,stream,bufferSize)
+        public IoSerialState(IoHeader header, Stream stream, int bufferSize,SerialPort serialPort) : base(header, bufferSize)
         {
+            this.SetStream(stream);
             mSerialPort = serialPort;
         }
     }

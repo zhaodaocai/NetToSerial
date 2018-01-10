@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace com
 {
-    public class Log
+    public class Log 
     {
         private static Log log = new Log();
         private static RichTextBox mRich = new RichTextBox();

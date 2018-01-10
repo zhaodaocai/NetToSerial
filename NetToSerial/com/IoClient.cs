@@ -12,38 +12,50 @@ namespace com
         private IPAddress mAddress;
         private int mPort;
         private IoHeader mHeader;
-        private int mBufferSize;
-        private long mID;
+        private int mBufferSize=1024;
+        private int mID;
         TcpClient mClient=new TcpClient();
-
-        public IoClient(long id,IoHeader header, String ip, int port,int bufferSize)
+        public IoClient(int id, String ip, int port, IoHeader header)
         {
             mID = id;
-            mBufferSize = bufferSize;
             mHeader = header;
             mAddress = IPAddress.Parse(ip);
             mPort = port;
         }
 
-        public long GetID()
+        public int GetID()
         {
             return mID;
         }
 
+        public override string ToString()
+        {
+            return String.Format("[{0},{1}:{2}]", mID, mAddress.ToString(), mPort);
+        }
+
         public void Start()
         {
-            IoClientState state = new IoClientState(mHeader, mClient.GetStream(), mBufferSize, mClient);
+            IoClientState state = new IoClientState(mHeader, mBufferSize, mClient);
             mClient.BeginConnect(mAddress, mPort, new AsyncCallback(DoConnectCallBack), state);
-            state.BeginRead();
         }
 
         private void DoConnectCallBack(IAsyncResult ar)
         {
-            mClient.EndConnect(ar);
-            IoState state = ar.AsyncState as IoState;
-            ConnectOpened(state);
-        }
+            try
+            {
+                mClient.EndConnect(ar);
+                IoState state = ar.AsyncState as IoState;
+                ConnectOpened(state);
 
+                //连接后启动异步读数据
+                state.SetStream(mClient.GetStream());
+                state.BeginRead();
+            }
+            catch(Exception ex)
+            {
+                mHeader.SessionException(this, ex);
+            }
+        }
 
         public void Stop()
         {
@@ -85,6 +97,10 @@ namespace com
         {
             mHeader.SessionOpened(header);
         }
-  
+
+        public void SetReadBuffer(int size)
+        {
+            mBufferSize = size;
+        }
     }
 }
