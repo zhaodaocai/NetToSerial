@@ -183,9 +183,9 @@ namespace NetToSerial
             {
                 dgCell = dgRow.Cells[i];
                 cellValue = dgCell.Value;
-                if (cellValue == null || cellValue.GetType()==typeof(DBNull))
+                if (dtRow.Table.Columns[i].DataType == typeof(Boolean))
                 {
-                    dtRow[i] = dgCell.Style.NullValue;// .OwningColumn.CellTemplate.Style.NullValue;
+                    dtRow[i] = Convert.ToBoolean(cellValue.GetType() == typeof(DBNull) ? false : cellValue);
                 }
                 else
                 {

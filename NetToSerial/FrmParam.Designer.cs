@@ -86,7 +86,6 @@
             this.ColSerialPort = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColBaud = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColParity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColReadTimeout = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.GridServer)).BeginInit();
             this.TabParam.SuspendLayout();
             this.PageSerial.SuspendLayout();
@@ -164,7 +163,7 @@
             this.TabParam.Location = new System.Drawing.Point(12, 67);
             this.TabParam.Name = "TabParam";
             this.TabParam.SelectedIndex = 0;
-            this.TabParam.Size = new System.Drawing.Size(714, 339);
+            this.TabParam.Size = new System.Drawing.Size(655, 339);
             this.TabParam.TabIndex = 12;
             // 
             // PageSerial
@@ -173,7 +172,7 @@
             this.PageSerial.Location = new System.Drawing.Point(4, 26);
             this.PageSerial.Name = "PageSerial";
             this.PageSerial.Padding = new System.Windows.Forms.Padding(3);
-            this.PageSerial.Size = new System.Drawing.Size(706, 309);
+            this.PageSerial.Size = new System.Drawing.Size(647, 309);
             this.PageSerial.TabIndex = 1;
             this.PageSerial.Text = "串口参数";
             this.PageSerial.UseVisualStyleBackColor = true;
@@ -188,8 +187,7 @@
             this.SerialID,
             this.ColSerialPort,
             this.ColBaud,
-            this.ColParity,
-            this.ColReadTimeout});
+            this.ColParity});
             this.GridSerial.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.GridSerial.Location = new System.Drawing.Point(7, 18);
             this.GridSerial.Margin = new System.Windows.Forms.Padding(4);
@@ -197,7 +195,7 @@
             this.GridSerial.RowHeadersWidth = 80;
             this.GridSerial.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.GridSerial.RowTemplate.Height = 30;
-            this.GridSerial.Size = new System.Drawing.Size(692, 208);
+            this.GridSerial.Size = new System.Drawing.Size(630, 208);
             this.GridSerial.TabIndex = 2;
             this.GridSerial.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.GridSerial_DataError);
             this.GridSerial.RowStateChanged += new System.Windows.Forms.DataGridViewRowStateChangedEventHandler(this.GridSerial_RowStateChanged);
@@ -331,7 +329,7 @@
             this.PageServer.Location = new System.Drawing.Point(4, 26);
             this.PageServer.Name = "PageServer";
             this.PageServer.Padding = new System.Windows.Forms.Padding(3);
-            this.PageServer.Size = new System.Drawing.Size(605, 309);
+            this.PageServer.Size = new System.Drawing.Size(660, 309);
             this.PageServer.TabIndex = 0;
             this.PageServer.Text = "网络服务端";
             this.PageServer.UseVisualStyleBackColor = true;
@@ -342,7 +340,7 @@
             this.PageClient.Location = new System.Drawing.Point(4, 26);
             this.PageClient.Name = "PageClient";
             this.PageClient.Padding = new System.Windows.Forms.Padding(3);
-            this.PageClient.Size = new System.Drawing.Size(605, 309);
+            this.PageClient.Size = new System.Drawing.Size(660, 309);
             this.PageClient.TabIndex = 2;
             this.PageClient.Text = "网络客户端";
             this.PageClient.UseVisualStyleBackColor = true;
@@ -406,7 +404,7 @@
             this.PageRelay.Location = new System.Drawing.Point(4, 26);
             this.PageRelay.Name = "PageRelay";
             this.PageRelay.Padding = new System.Windows.Forms.Padding(3);
-            this.PageRelay.Size = new System.Drawing.Size(605, 309);
+            this.PageRelay.Size = new System.Drawing.Size(660, 309);
             this.PageRelay.TabIndex = 3;
             this.PageRelay.Text = "转发参数";
             this.PageRelay.UseVisualStyleBackColor = true;
@@ -524,7 +522,7 @@
             this.WndCancel});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(729, 27);
+            this.toolStrip1.Size = new System.Drawing.Size(669, 27);
             this.toolStrip1.TabIndex = 11;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -592,18 +590,11 @@
             this.ColParity.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.ColParity.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // ColReadTimeout
-            // 
-            this.ColReadTimeout.DataPropertyName = "ColReadTimeout";
-            this.ColReadTimeout.HeaderText = "读超时";
-            this.ColReadTimeout.MaxInputLength = 3;
-            this.ColReadTimeout.Name = "ColReadTimeout";
-            // 
             // FrmParam
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(729, 475);
+            this.ClientSize = new System.Drawing.Size(669, 475);
             this.Controls.Add(this.TabParam);
             this.Controls.Add(this.toolStrip1);
             this.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -683,6 +674,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColSerialPort;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColBaud;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColParity;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ColReadTimeout;
     }
 }
