@@ -39,7 +39,7 @@ namespace com
 
         public override string ToString()
         {
-            return String.Format("IoSerial,ID:{0},PORT:{1} ", mID, mSerialPort.PortName);
+            return String.Format("PID:{0},PORT:{1} ", mID, mSerialPort.PortName);
         }
 
         public void Start()

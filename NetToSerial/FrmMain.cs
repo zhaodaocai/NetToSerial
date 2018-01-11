@@ -19,15 +19,15 @@ namespace NetToSerial
         {
             InitializeComponent();
         }
-      
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
             Log.Init(WndInfo);
-
+            splitContainerMain.Dock = DockStyle.Fill;
+            splitContainerChild.Dock = DockStyle.Fill;
+            wndSendData.Dock = DockStyle.Fill;
+            treeViewConnect.Dock = DockStyle.Fill;
             WndInfo.Dock = DockStyle.Fill;
-
-
         }
 
         private void wndSave_Click(object sender, EventArgs e)
@@ -67,11 +67,22 @@ namespace NetToSerial
         public void SessionClosed(IoHeader header)
         {
             Log.Out("SessionClosed:" + header.ToString());
-         }
+
+            String key = "K" + header.GetID();
+            treeViewConnect.Nodes.RemoveByKey(key);
+        }
 
         public void SessionOpened(IoHeader header)
         {
             Log.Out("SessionOpened:"+header.ToString());
+
+            String key="K"+header.GetID();
+            TreeNode node=treeViewConnect.Nodes[key];
+            if (key == null)
+            {
+                TreeNode item=treeViewConnect.Nodes.Add(key, header.ToString());
+                item.Tag = header.GetID();
+            }
         }
 
         public void ConnectOpened(IoState state)
@@ -188,6 +199,11 @@ namespace NetToSerial
         public void WriteData(byte[] buffer)
         {
             throw new NotImplementedException();
+        }
+
+        private void wndClear_Click_1(object sender, EventArgs e)
+        {
+            WndInfo.Clear();
         }
     }
 }

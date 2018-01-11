@@ -23,12 +23,14 @@ namespace com
 
         public override string ToString()
         {
-
-            String addr = mTcpClient.Client.RemoteEndPoint.ToString();
+            String addr = "";
+            if (mTcpClient.Client.Connected)
+            {
+                addr = mTcpClient.Client.RemoteEndPoint.ToString();
+            }
             int headerID = this.GetHeaderID();
-            return String.Format("IoClientState,ID:{0},IP:{1}", headerID, addr);
+            return String.Format("PID:{0},SID:{1},IP:{1}", headerID, this.mStateID,  addr);
         }
 
-       
     }
 }

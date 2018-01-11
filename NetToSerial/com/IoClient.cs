@@ -32,13 +32,13 @@ namespace com
 
         public override string ToString()
         {
-            return String.Format("IoClient,ID:{0},IP:{1}:{2} ",mID, mAddress.ToString(), mPort);
+            return String.Format("PID:{0},IP:{1}:{2} ",mID, mAddress.ToString(), mPort);
         }
 
         public void Start()
         {
-            IoClientState state = new IoClientState(this, mBufferSize, mClient);
-            mClient.BeginConnect(mAddress, mPort, new AsyncCallback(DoConnectCallBack), state);
+                IoClientState state = new IoClientState(this, mBufferSize, mClient);
+                mClient.BeginConnect(mAddress, mPort, new AsyncCallback(DoConnectCallBack), state);
         }
 
         private void DoConnectCallBack(IAsyncResult ar)
@@ -61,8 +61,14 @@ namespace com
 
         public void Stop()
         {
-            
-            
+            try
+            {
+                mClient.Close();
+            }
+            catch (Exception ex)
+            {
+                mHeader.SessionException(this, ex);
+            }
         }
 
         public void ConnectClosed(IoState state)

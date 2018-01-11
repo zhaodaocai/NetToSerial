@@ -12,13 +12,15 @@ namespace com
         private byte[] mReadBuffer;
         private byte[] mWriteBuffer;
         private Stream mStream;
+        protected int mStateID;
         private AutoResetEvent mCanWrite = new AutoResetEvent(true);
         public IoHeader mHeader;
-
+        private static int GID = 0;
         public IoState(IoHeader header,int bufferSize)
         {
             mReadBuffer = new byte[bufferSize];
             mHeader = header;
+            mStateID=System.Threading.Interlocked.Increment(ref GID);
         }
 
         public byte[] GetBuffer()

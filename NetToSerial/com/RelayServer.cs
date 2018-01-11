@@ -9,7 +9,7 @@ using System.Text;
 /// </summary>
 namespace NetToSerial.com
 {
-    class RelayServer 
+    class RelayServer  : StartEvent
     {
         /// <summary>
         /// 通信集合
@@ -93,25 +93,25 @@ namespace NetToSerial.com
 
         internal void Start()
         {
-            lock (this)
+            if (mCanStart.WaitOne(0))
             {
                 foreach (IoHeader item in mHeaders.Values)
                 {
                     item.Start();
                 }
+
             }
         }
 
         internal void Stop()
         {
-            lock (this)
+            foreach (IoHeader item in mHeaders.Values)
             {
-                foreach (IoHeader item in mHeaders.Values)
-                {
-                    item.Stop();
-                }
-                mHeaders.Clear();
+                item.Stop();
             }
+            mHeaders.Clear();
+
+            mCanStart.Set();
         }
     }
 }

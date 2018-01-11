@@ -40,14 +40,14 @@ namespace com
 
         public override string ToString()
         {
-            return String.Format("IoServer, ID:{0},IP:{1}:{2} ",mID, mAddress.ToString(),mPort);
+            return String.Format("PID:{0},IP:{1}:{2} ",mID, mAddress.ToString(),mPort);
         }
 
         public void Stop()
         {
             if (mTcpListener != null)
             {
-                mTcpListener.Stop();
+               mTcpListener.Stop();
                SessionClosed(this);
             }
         }

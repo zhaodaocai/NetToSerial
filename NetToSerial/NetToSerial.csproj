@@ -69,6 +69,7 @@
     <Compile Include="com\IWriteData.cs" />
     <Compile Include="com\Log.cs" />
     <Compile Include="com\RelayServer.cs" />
+    <Compile Include="com\StartEvent.cs" />
     <Compile Include="com\STR.cs" />
     <Compile Include="FrmMain.cs">
       <SubType>Form</SubType>
