@@ -54,6 +54,10 @@ namespace com
 
         void SetReadBuffer(int size);
 
+
+        void WriteData(byte[] buffer);
+
+
         int GetID();
         
         /// <summary>

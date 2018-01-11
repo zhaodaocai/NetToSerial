@@ -7,12 +7,13 @@ using System.Text;
 
 namespace com
 {
-    public class IoSerial : IoHeader
+    public class IoSerial : IoHeader, IWriteData
     {
         private IoHeader mHeader = null;
         private SerialPort mSerialPort = new SerialPort();
         private int mID;
         private int mBufferSize = 1024;
+        private IoState mIoState;
         public IoSerial(int id, SerialPort sp, IoHeader header)
         {
             mID = id;
@@ -38,7 +39,7 @@ namespace com
 
         public override string ToString()
         {
-            return String.Format("[{0},{1}]", mID, mSerialPort.PortName);
+            return String.Format("IoSerial,ID:{0},PORT:{1} ", mID, mSerialPort.PortName);
         }
 
         public void Start()
@@ -50,11 +51,11 @@ namespace com
                     mSerialPort.Open();
                     mSerialPort.DiscardOutBuffer();
                     mSerialPort.DiscardInBuffer();
-                    mHeader.SessionOpened(this);
+                    SessionOpened(this);
                     Stream stream = mSerialPort.BaseStream;
                     stream.ReadTimeout = GetReadTimeout(); //设置读超时
                     IoSerialState state = new IoSerialState(this, stream, mBufferSize, mSerialPort);
-                    mHeader.ConnectOpened(state); //连接打开
+                    ConnectOpened(state); //连接打开
                     state.BeginRead();
                 }
                 catch (Exception ex)
@@ -73,11 +74,11 @@ namespace com
                     mSerialPort.DiscardOutBuffer();
                     mSerialPort.DiscardInBuffer();
                     mSerialPort.Close();
-                    mHeader.SessionClosed(this);
+                    SessionClosed(this);
                 }
                 catch (Exception ex)
                 {
-                    mHeader.SessionException(this, ex);
+                    SessionException(this, ex);
                 }
             }
         }
@@ -94,6 +95,7 @@ namespace com
 
         public void ConnectOpened(IoState state)
         {
+            mIoState = state;
             mHeader.ConnectOpened(state);
         }
 
@@ -120,6 +122,14 @@ namespace com
         public void SetReadBuffer(int size)
         {
             mBufferSize = size;
+        }
+
+        public void WriteData(byte[] buffer)
+        {
+            if (mIoState != null)
+            {
+                mIoState.WriteData(buffer);
+            }
         }
     }
 }

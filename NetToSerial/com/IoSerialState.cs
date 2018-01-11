@@ -13,7 +13,7 @@ namespace com
 
         public override string ToString()
         {
-            return String.Format("{0},{1}",mSerialPort.PortName,mSerialPort.BaudRate);
+            return String.Format("IoSerialState,{0},{1}", mSerialPort.PortName,mSerialPort.BaudRate);
         }
 
 

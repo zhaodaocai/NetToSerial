@@ -43,7 +43,7 @@ namespace NetToSerial
             }
             catch(Exception ex)
             {
-                Log.Err(ex.Message);
+                Log.Err(ex.ToString());
             }
            
         }
@@ -67,43 +67,40 @@ namespace NetToSerial
         public void SessionClosed(IoHeader header)
         {
             Log.Out("SessionClosed:" + header.ToString());
-            System.Diagnostics.Debug.WriteLine("SessionClosed:" + header.ToString());
-        }
+         }
 
         public void SessionOpened(IoHeader header)
         {
             Log.Out("SessionOpened:"+header.ToString());
-            System.Diagnostics.Debug.WriteLine("SessionOpened:" + header.ToString());
         }
 
         public void ConnectOpened(IoState state)
         {
             Log.Out("ConnectOpened:" +state.ToString());
-            System.Diagnostics.Debug.WriteLine("ConnectOpened:" + state.ToString());
         }
 
         public void ConnectClosed(IoState state)
         {
             Log.Out("ConnectClosed:" + state.ToString());
-            System.Diagnostics.Debug.WriteLine("ConnectClosed:" + state.ToString());
         }
 
         public void MessageReceived(IoState state, byte[] message)
         {
-            Log.Info(Color.Black, "RX:" + STR.toString(message));
-            System.Diagnostics.Debug.WriteLine("MessageReceived:" + state.ToString());
+            Log.Info(Color.Black, "RX:" + state.ToString()+","+ STR.toString(message));
+            int id=state.GetHeaderID();
+            RelayServer.GetInstance().WriteData(id, message);
         }
 
         public void MessageSent(IoState state, byte[] message)
         {
-            Log.Info(Color.Blue,"TX:" + STR.toString(message));
+            Log.Info(Color.Blue,"TX:" + state.ToString() + "," + STR.toString(message));
 
             System.Diagnostics.Debug.WriteLine("MessageSent:"+state.ToString());
         }
 
         public void SessionException(Object o, Exception ex)
         {
-            Log.Err("异常信息;" + ex.Message);
+            Log.Err("异常信息;" + ex.Message+","+ex.ToString());
             System.Diagnostics.Debug.WriteLine("SessionException:" + ex.Message+","+o.ToString());
         }
 
@@ -125,7 +122,7 @@ namespace NetToSerial
                     if (sr.select)
                     {
                         SerialPort sp = new SerialPort("COM" + sr.port, sr.baud, (Parity)sr.parity);
-                        IoSerial serial = new IoSerial(RelayServer.GetID(), sp, this);
+                        IoSerial serial = new IoSerial(sr.id, sp, this);
 
                         RelayServer.GetInstance().AddHeader(serial);
                     }
@@ -139,7 +136,7 @@ namespace NetToSerial
                     ServerRow sr = new ServerRow(dr);
                     if (sr.select)
                     {
-                        IoServer server = new IoServer(RelayServer.GetID(), sr.ip, sr.port, this);
+                        IoServer server = new IoServer(sr.id, sr.ip, sr.port, this);
                         RelayServer.GetInstance().AddHeader(server);
                     }
                 }
@@ -152,7 +149,7 @@ namespace NetToSerial
                     ClientRow sr = new ClientRow(dr);
                     if (sr.select)
                     {
-                        IoClient client = new IoClient(RelayServer.GetID(), sr.ip, sr.port, this);
+                        IoClient client = new IoClient(sr.id, sr.ip, sr.port, this);
                         RelayServer.GetInstance().AddHeader(client);
                     }
                 }
@@ -184,6 +181,11 @@ namespace NetToSerial
         }
 
         public int GetID()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteData(byte[] buffer)
         {
             throw new NotImplementedException();
         }

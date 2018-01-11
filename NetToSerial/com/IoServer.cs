@@ -7,14 +7,14 @@ using System.Text;
 
 namespace com
 {
-    public class IoServer : IoHeader
+    public class IoServer : IoHeader, IWriteData
     {
         private IoHeader mHeader = null;
         private IPAddress mAddress; 
         private int mPort;
         private int mBufferSize=1024;
         private TcpListener mTcpListener;
-        private List<IoState> mSessions = new List<IoState>();
+        private List<IoState> mIoStates = new List<IoState>();
         private int mID;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace com
 
         public override string ToString()
         {
-            return String.Format("[{0},{1}:{2}]",mID, mAddress.ToString(),mPort);
+            return String.Format("IoServer, ID:{0},IP:{1}:{2} ",mID, mAddress.ToString(),mPort);
         }
 
         public void Stop()
@@ -60,7 +60,7 @@ namespace com
                 {
                     mTcpListener = new TcpListener(mAddress, mPort);
                     mTcpListener.Start();
-                    IoAcceptState state = new IoAcceptState(mHeader, mTcpListener,mBufferSize);
+                    IoAcceptState state = new IoAcceptState(this, mTcpListener,mBufferSize);
                     state.BeginAcceptTcpClient();
                     mHeader.SessionOpened(this);
                 }
@@ -98,19 +98,36 @@ namespace com
 
         public void ConnectOpened(IoState state)
         {
-            mSessions.Add(state);
+            lock (mIoStates)
+            {
+                mIoStates.Add(state);
+            }
             mHeader.ConnectOpened(state);
         }
 
         public void ConnectClosed(IoState state)
         {
-            mSessions.Remove(state);
+            lock (mIoStates)
+            {
+                mIoStates.Remove(state);
+            }
             mHeader.ConnectClosed(state);
         }
 
         public void SetReadBuffer(int size)
         {
             mBufferSize = size;
+        }
+
+        public void WriteData(byte[] buffer)
+        {
+            lock (mIoStates)
+            {
+                foreach(IoState item in mIoStates)
+                {
+                    item.WriteData(buffer);
+                }
+            }
         }
     }
 }

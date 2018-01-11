@@ -66,6 +66,7 @@
     <Compile Include="com\IoServer.cs" />
     <Compile Include="com\IoState.cs" />
     <Compile Include="com\IoClientState.cs" />
+    <Compile Include="com\IWriteData.cs" />
     <Compile Include="com\Log.cs" />
     <Compile Include="com\RelayServer.cs" />
     <Compile Include="com\STR.cs" />

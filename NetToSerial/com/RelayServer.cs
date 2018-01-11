@@ -9,7 +9,7 @@ using System.Text;
 /// </summary>
 namespace NetToSerial.com
 {
-    class RelayServer
+    class RelayServer 
     {
         /// <summary>
         /// 通信集合
@@ -44,6 +44,22 @@ namespace NetToSerial.com
             mHeaders[id] = header;
         }
 
+        public void WriteData(int id, byte[] buffer)
+        {
+            IoHeader header=null;
+            List<int> ids = new List<int>();
+            if (mRelays.TryGetValue(id, out ids))
+            {
+                foreach(int item in ids)
+                {
+                    if (mHeaders.TryGetValue(item, out header))
+                    {
+                        header.WriteData(buffer);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// 增加转发列表
         /// </summary>
@@ -62,16 +78,16 @@ namespace NetToSerial.com
         /// <param name="id2"></param>
         private void AddRelay1(int id1, int id2)
         {
-            List<int> ids = mRelays[id1];
-            if (ids == null)
+            List<int> ids;
+            if (mRelays.TryGetValue(id1, out ids))
+            {
+                ids.Add(id2);
+            }
+            else
             {
                 ids = new List<int>();
                 ids.Add(id2);
                 mRelays[id1] = ids;
-            }
-            else
-            {
-                ids.Add(id2);
             }
         }
 

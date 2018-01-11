@@ -7,7 +7,7 @@ using System.Text;
 
 namespace com
 {
-    public class IoClient : IoHeader
+    public class IoClient : IoHeader, IWriteData
     {
         private IPAddress mAddress;
         private int mPort;
@@ -15,6 +15,8 @@ namespace com
         private int mBufferSize=1024;
         private int mID;
         TcpClient mClient=new TcpClient();
+
+        IoState mIoState;
         public IoClient(int id, String ip, int port, IoHeader header)
         {
             mID = id;
@@ -30,12 +32,12 @@ namespace com
 
         public override string ToString()
         {
-            return String.Format("[{0},{1}:{2}]", mID, mAddress.ToString(), mPort);
+            return String.Format("IoClient,ID:{0},IP:{1}:{2} ",mID, mAddress.ToString(), mPort);
         }
 
         public void Start()
         {
-            IoClientState state = new IoClientState(mHeader, mBufferSize, mClient);
+            IoClientState state = new IoClientState(this, mBufferSize, mClient);
             mClient.BeginConnect(mAddress, mPort, new AsyncCallback(DoConnectCallBack), state);
         }
 
@@ -70,6 +72,7 @@ namespace com
 
         public void ConnectOpened(IoState state)
         {
+            mIoState = state;
             mHeader.ConnectOpened(state);
         }
 
@@ -101,6 +104,14 @@ namespace com
         public void SetReadBuffer(int size)
         {
             mBufferSize = size;
+        }
+
+        public void WriteData(byte[] buffer)
+        {
+            if (mIoState != null)
+            {
+                mIoState.WriteData(buffer);
+            }
         }
     }
 }

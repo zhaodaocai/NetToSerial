@@ -26,7 +26,17 @@ namespace com
 
         internal TcpClient EndAcceptTcpClient(IAsyncResult ar)
         {
-            return mTcpListener.EndAcceptTcpClient(ar);
+            TcpClient ret=null;
+            try
+            {
+                ret=mTcpListener.EndAcceptTcpClient(ar);
+            }
+            catch(Exception ex)
+            {
+                ret = null;
+                Log.Err("EndAcceptTcpClient:"+ex.Message);
+            }
+            return ret;
         }
 
         internal void BeginAcceptTcpClient()

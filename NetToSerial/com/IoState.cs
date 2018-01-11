@@ -3,28 +3,37 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace com
 {
     abstract public class IoState  : Object
     {
-        private byte[] mBuffer;
+        private byte[] mReadBuffer;
+        private byte[] mWriteBuffer;
         private Stream mStream;
+        private AutoResetEvent mCanWrite = new AutoResetEvent(true);
         public IoHeader mHeader;
+
         public IoState(IoHeader header,int bufferSize)
         {
-            mBuffer = new byte[bufferSize];
+            mReadBuffer = new byte[bufferSize];
             mHeader = header;
         }
 
         public byte[] GetBuffer()
         {
-            return mBuffer;
+            return mReadBuffer;
         }
 
         public Stream GetStream()
         {
             return mStream;
+        }
+
+        public int GetHeaderID()
+        {
+            return mHeader.GetID();
         }
 
         public void SetStream(Stream stream)
@@ -34,7 +43,21 @@ namespace com
 
         public IAsyncResult BeginRead()
         {
-            return mStream.BeginRead(mBuffer, 0, mBuffer.Length, new AsyncCallback(ReadCallBack), this);
+            return mStream.BeginRead(mReadBuffer, 0, mReadBuffer.Length, new AsyncCallback(ReadCallBack), this);
+        }
+
+        public void WriteData(byte[] buffer)
+        {
+            if (mCanWrite.WaitOne())
+            {
+                mWriteBuffer = buffer;
+                BeginWrite();
+            }
+        }
+
+        public IAsyncResult BeginWrite()
+        {
+            return mStream.BeginWrite(mWriteBuffer, 0, mWriteBuffer.Length, new AsyncCallback(WriteCallBack), this);
         }
 
         internal int EndRead(IAsyncResult iar)
@@ -70,6 +93,18 @@ namespace com
             }
         }
 
+        private static void WriteCallBack(IAsyncResult iar)
+        {
+            IoState state = iar.AsyncState as IoState;
+            state.mStream.EndWrite(iar);
+            
+            int writeCount = state.mWriteBuffer.Length;
+            byte[] buffer = new byte[writeCount];
+            Array.Copy(state.mWriteBuffer, buffer, writeCount);
+            state.mHeader.MessageSent(state, buffer);
+            state.mCanWrite.Set();
+        }
+
         private int ReadData(int offset)
         {
             int ret = offset;
@@ -80,7 +115,7 @@ namespace com
                 {
                     try
                     {
-                        readCount = mStream.Read(mBuffer, ret, mBuffer.Length - ret);
+                        readCount = mStream.Read(mReadBuffer, ret, mReadBuffer.Length - ret);
                         ret += readCount;
                     }
                     catch(TimeoutException ex)
@@ -92,5 +127,7 @@ namespace com
             }
             return ret;
         }
+
+        
     }
 }
