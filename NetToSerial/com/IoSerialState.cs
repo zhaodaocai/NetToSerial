@@ -13,7 +13,7 @@ namespace com
 
         public override string ToString()
         {
-            return String.Format("PID:{0},SID:{1},{2}-{3}",mHeader.GetID(),this.mStateID, mSerialPort.PortName,mSerialPort.BaudRate);
+            return String.Format("PID:{0},SID:{1},{2}-{3}",mHeader.GetPID(),this.mSID, mSerialPort.PortName,mSerialPort.BaudRate);
         }
 
 

@@ -10,26 +10,25 @@ namespace com
     public class IoClientState : IoState
     {
         private TcpClient mTcpClient;
-
-        public IoClientState(IoHeader header, int bufferSize) : base(header, bufferSize)
-        {
-           
-        }
-
+        private String mAddress;
         public IoClientState(IoHeader header, int bufferSize, TcpClient tcpClient) : base(header, bufferSize)
         {
             mTcpClient = tcpClient;
+            mAddress = mTcpClient.Client.RemoteEndPoint.ToString();
         }
 
         public override string ToString()
         {
-            String addr = "";
-            if (mTcpClient.Client.Connected)
+           int headerID = this.GetPID();
+           return String.Format("PID:{0},SID:{1},IP:{2}", headerID, this.mSID, mAddress);
+        }
+
+        public void Close()
+        {
+            if (mTcpClient != null)
             {
-                addr = mTcpClient.Client.RemoteEndPoint.ToString();
+                mTcpClient.Close();
             }
-            int headerID = this.GetHeaderID();
-            return String.Format("PID:{0},SID:{1},IP:{1}", headerID, this.mStateID,  addr);
         }
 
     }

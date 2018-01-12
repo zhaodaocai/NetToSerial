@@ -14,6 +14,13 @@ namespace NetToSerial
 {
     public partial class FrmMain : Form, IoHeader
     {
+        int mSendType=0;
+        int mRecType=0;
+
+
+        public delegate void InvokeDeleteNode(String key);
+        public delegate void InvokeAddNode(TreeNode parent,TreeNode node);
+
 
         public FrmMain()
         {
@@ -26,8 +33,10 @@ namespace NetToSerial
             splitContainerMain.Dock = DockStyle.Fill;
             splitContainerChild.Dock = DockStyle.Fill;
             wndSendData.Dock = DockStyle.Fill;
-            treeViewConnect.Dock = DockStyle.Fill;
+            treeConnect.Dock = DockStyle.Fill;
             WndInfo.Dock = DockStyle.Fill;
+            wndRecFormat.SelectedIndex = 0;
+            wndSendFormat.SelectedIndex = 0;
         }
 
         private void wndSave_Click(object sender, EventArgs e)
@@ -64,56 +73,92 @@ namespace NetToSerial
             frm.ShowDialog();
         }
 
-        public void SessionClosed(IoHeader header)
+        public void SessionClosed(int pid)
         {
-            Log.Out("SessionClosed:" + header.ToString());
+            Log.Out("SessionClosed,PID:" + pid);
+            String key = "K" + pid;
+            treeConnect.BeginInvoke(new InvokeDeleteNode(DeleteNode),key);
+        }
 
-            String key = "K" + header.GetID();
-            treeViewConnect.Nodes.RemoveByKey(key);
+        public void DeleteNode(String key)
+        {
+            treeConnect.Nodes.RemoveByKey(key);
+        }
+
+        public void AddNode(TreeNode parent,TreeNode child)
+        {
+            if (parent == null)
+            {
+                treeConnect.Nodes.Add(child);
+            }
+            else
+            {
+                parent.Nodes.Add(child);
+            }
+        }
+
+
+        public String GetNodeKey(int id)
+        {
+            return "K" + id;
         }
 
         public void SessionOpened(IoHeader header)
         {
-            Log.Out("SessionOpened:"+header.ToString());
-
-            String key="K"+header.GetID();
-            TreeNode node=treeViewConnect.Nodes[key];
-            if (key == null)
+            Log.Out("SessionOpened,"+header.ToString());
+            int pid = header.GetPID();
+            String key = GetNodeKey(pid);
+            TreeNode node=treeConnect.Nodes[key];
+            if (node == null)
             {
-                TreeNode item=treeViewConnect.Nodes.Add(key, header.ToString());
-                item.Tag = header.GetID();
+                node = treeConnect.Nodes.Add(key, header.ToString());
+                node.Tag = pid;
             }
+
         }
 
         public void ConnectOpened(IoState state)
         {
-            Log.Out("ConnectOpened:" +state.ToString());
+            Log.Out("ConnectOpened,"+ state.ToString());
+            int pid = state.GetPID();
+            int sid = state.GetSID();
+            TreeNode pnode, snode;
+            pnode =treeConnect.Nodes[ GetNodeKey(pid)];
+            if (pnode != null)
+            {
+                String skey = GetNodeKey(sid);
+                snode = new TreeNode();
+                snode.Name = skey;
+                snode.Text = state.ToString();
+                snode.Tag = sid;
+                treeConnect.BeginInvoke(new InvokeAddNode(AddNode),pnode, snode);
+            }
         }
 
-        public void ConnectClosed(IoState state)
+        public void ConnectClosed(int pid, int sid)
         {
-            Log.Out("ConnectClosed:" + state.ToString());
+            Log.Out(String.Format("ConnectClosed,PID:{0},SID:{1}", pid, sid));
         }
 
         public void MessageReceived(IoState state, byte[] message)
         {
-            Log.Info(Color.Black, "RX:" + state.ToString()+","+ STR.toString(message));
-            int id=state.GetHeaderID();
-            RelayServer.GetInstance().WriteData(id, message);
+            int pid = state.GetPID();
+            int sid = state.GetSID();
+            Log.Info(Color.Black,String.Format("{0}-{1} RX: ",pid,sid) +STR.ToFormatString(message,mRecType));
+            RelayServer.GetInstance().RelayData(state.GetPID(), message);
         }
 
         public void MessageSent(IoState state, byte[] message)
         {
-            Log.Info(Color.Blue,"TX:" + state.ToString() + "," + STR.toString(message));
-
-            System.Diagnostics.Debug.WriteLine("MessageSent:"+state.ToString());
+            int pid = state.GetPID();
+            int sid = state.GetSID();
+            Log.Info(Color.Blue, String.Format("{0}-{1} TX: ", pid, sid) + STR.ToFormatString(message,mSendType));
         }
 
         public void SessionException(Object o, Exception ex)
         {
             Log.Err("异常信息;" + ex.Message+","+ex.ToString());
-            System.Diagnostics.Debug.WriteLine("SessionException:" + ex.Message+","+o.ToString());
-        }
+         }
 
         public void Start()
         {
@@ -191,7 +236,7 @@ namespace NetToSerial
             throw new NotImplementedException();
         }
 
-        public int GetID()
+        public int GetPID()
         {
             throw new NotImplementedException();
         }
@@ -204,6 +249,71 @@ namespace NetToSerial
         private void wndClear_Click_1(object sender, EventArgs e)
         {
             WndInfo.Clear();
+        }
+
+
+        private byte[] GetSendData()
+        {
+            byte[] ret = null;
+            String strSend = wndSendData.Text.Trim();
+            if (strSend.Length < 1)
+            {
+                return ret;
+            }
+            try
+            {
+                int index = wndSendFormat.SelectedIndex;
+                if (index == 0)
+                {
+                    ret = STR.HextoBytes(strSend);
+                }
+                else
+                {
+                    ret = STR.AscToBytes(strSend);
+                }
+            }
+            catch(Exception ex)
+            {
+                Log.Err(ex.ToString());
+            }
+            return ret;
+        }
+
+
+        private void wndSend_Click(object sender, EventArgs e)
+        {
+            byte[] buffer = GetSendData();
+            TreeNode selectNode = treeConnect.SelectedNode;
+            if (buffer!=null && buffer.Length>0 && selectNode != null)
+            {
+                int pid, sid;
+                if (selectNode.Parent == null)
+                {
+                    pid = (int)selectNode.Tag;
+                    RelayServer.GetInstance().WriteData(pid, buffer);
+                }
+                else
+                {
+                    pid = (int)selectNode.Parent.Tag;
+                    sid = (int)selectNode.Tag;
+                    RelayServer.GetInstance().WriteData(pid, sid, buffer);
+                }
+            }
+        }
+
+        public void WriteData(int sid, byte[] buffer)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void wndSendFormat_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            mSendType = wndSendFormat.SelectedIndex;
+        }
+
+        private void wndRecFormat_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            mRecType = wndRecFormat.SelectedIndex;
         }
     }
 }

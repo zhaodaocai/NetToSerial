@@ -11,7 +11,6 @@ namespace com
         internal TcpListener mTcpListener;
         internal IoHeader mHeader;
         internal int mBufferSize;
-
         internal IoAcceptState(IoHeader header,TcpListener tcpListener,int bufferSize)
         {
             mBufferSize = bufferSize;
@@ -31,10 +30,14 @@ namespace com
             {
                 ret=mTcpListener.EndAcceptTcpClient(ar);
             }
-            catch(Exception ex)
+            catch(ObjectDisposedException ex1)
             {
                 ret = null;
-                Log.Err("EndAcceptTcpClient:"+ex.Message);
+                ex1.Source = null;
+                
+            }catch(Exception ex2)
+            {
+                Log.Err("EndAcceptTcpClient:"+ex2.Message);
             }
             return ret;
         }
@@ -51,18 +54,26 @@ namespace com
             try
             {
                 TcpClient client = acceptState.EndAcceptTcpClient(ar);
-                IoClientState sockState = new IoClientState(acceptState.mHeader,acceptState.mBufferSize,client);
-                acceptState.mHeader.ConnectOpened(sockState); //接收到连接消息
-                sockState.SetStream(client.GetStream());
-                sockState.BeginRead();
-                acceptState.BeginAcceptTcpClient();
+                if (client == null)
+                {
+                    acceptState.mHeader.SessionClosed(acceptState.mHeader.GetPID());
+                }
+                else
+                {
+                    IoClientState sockState = new IoClientState(acceptState.mHeader, acceptState.mBufferSize, client);
+                    acceptState.mHeader.ConnectOpened(sockState); //接收到连接消息
+                    sockState.SetStream(client.GetStream());
+                    sockState.BeginRead();
+                    acceptState.BeginAcceptTcpClient();
+                }
             }
             catch (Exception ex)
             {
+                acceptState.mHeader.SessionClosed(acceptState.mHeader.GetPID());
                 acceptState.mHeader.SessionException(acceptState, ex);
             }
         }
 
-     
+      
     }
 }

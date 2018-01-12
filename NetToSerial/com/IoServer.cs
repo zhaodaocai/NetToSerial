@@ -14,8 +14,10 @@ namespace com
         private int mPort;
         private int mBufferSize=1024;
         private TcpListener mTcpListener;
-        private List<IoState> mIoStates = new List<IoState>();
-        private int mID;
+        private int mPID;
+        private IoAcceptState mIoAcceptState;
+
+        Dictionary<int, IoState> mIoStates = new Dictionary<int, IoState>();
 
         /// <summary>
         /// 
@@ -24,31 +26,46 @@ namespace com
         /// <param name="ip"></param>
         /// <param name="port"></param>
         /// <param name="bufferSize"> 客户端数据缓冲区大小</param>
-        public IoServer(int id,String ip, int port,IoHeader header)
+        public IoServer(int pid,String ip, int port,IoHeader header)
         {
-            mID = id;
+            mPID = pid;
             mHeader = header;
             mPort = port;
             mAddress = IPAddress.Parse(ip);
         }
 
-        public int GetID()
+        public int GetPID()
         {
-            return mID;
+            return mPID;
         }
 
 
         public override string ToString()
         {
-            return String.Format("PID:{0},IP:{1}:{2} ",mID, mAddress.ToString(),mPort);
+            return String.Format("PID:{0},IP:{1}:{2} ",mPID, mAddress.ToString(),mPort);
         }
 
         public void Stop()
         {
             if (mTcpListener != null)
             {
-               mTcpListener.Stop();
-               SessionClosed(this);
+                CloseConnect();
+
+                mTcpListener.Stop();
+            }
+        }
+
+        
+        public void CloseConnect()
+        {
+            lock (mIoStates)
+            {
+                foreach(IoState item in mIoStates.Values)
+                {
+                    IoClientState clientState = item as IoClientState;
+                    clientState.Close();
+                }
+                mIoStates.Clear();
             }
         }
 
@@ -60,8 +77,8 @@ namespace com
                 {
                     mTcpListener = new TcpListener(mAddress, mPort);
                     mTcpListener.Start();
-                    IoAcceptState state = new IoAcceptState(this, mTcpListener,mBufferSize);
-                    state.BeginAcceptTcpClient();
+                    mIoAcceptState = new IoAcceptState(this, mTcpListener,mBufferSize);
+                    mIoAcceptState.BeginAcceptTcpClient();
                     mHeader.SessionOpened(this);
                 }
                 catch (Exception ex)
@@ -71,14 +88,15 @@ namespace com
             }
         }
 
-        public void SessionClosed(IoHeader header)
+        public void SessionClosed(int pid)
         {
-            mHeader.SessionClosed(header);
+            
+            mHeader.SessionClosed(pid);
         }
 
         public void SessionOpened(IoHeader header)
         {
-            mHeader.SessionOpened(header);
+            throw new NotImplementedException();
         }
 
         public void MessageReceived(IoState state, byte[] message)
@@ -100,18 +118,18 @@ namespace com
         {
             lock (mIoStates)
             {
-                mIoStates.Add(state);
+                mIoStates.Add(state.GetSID(), state);
             }
             mHeader.ConnectOpened(state);
         }
 
-        public void ConnectClosed(IoState state)
+        public void ConnectClosed(int pid, int sid)
         {
             lock (mIoStates)
             {
-                mIoStates.Remove(state);
+                mIoStates.Remove(pid);
             }
-            mHeader.ConnectClosed(state);
+            mHeader.ConnectClosed(pid,sid);
         }
 
         public void SetReadBuffer(int size)
@@ -123,9 +141,21 @@ namespace com
         {
             lock (mIoStates)
             {
-                foreach(IoState item in mIoStates)
+                foreach (IoState item in mIoStates.Values)
                 {
                     item.WriteData(buffer);
+                }
+            }
+        }
+
+        public void WriteData(int sid, byte[] buffer)
+        {
+            lock (mIoStates)
+            {
+                IoState state;
+                if(mIoStates.TryGetValue(sid,out state))
+                {
+                    state.WriteData(buffer);
                 }
             }
         }

@@ -11,12 +11,12 @@ namespace com
     {
         private IoHeader mHeader = null;
         private SerialPort mSerialPort = new SerialPort();
-        private int mID;
+        private int mPID;
         private int mBufferSize = 1024;
         private IoState mIoState;
-        public IoSerial(int id, SerialPort sp, IoHeader header)
+        public IoSerial(int pid, SerialPort sp, IoHeader header)
         {
-            mID = id;
+            mPID = pid;
             mHeader = header;
             mSerialPort.PortName = sp.PortName;
             mSerialPort.BaudRate = sp.BaudRate;
@@ -25,9 +25,9 @@ namespace com
             mSerialPort.StopBits = sp.StopBits;
         }
 
-        public int GetID()
+        public int GetPID()
         {
-            return mID;
+            return mPID;
         }
 
         public int GetReadTimeout()
@@ -39,7 +39,7 @@ namespace com
 
         public override string ToString()
         {
-            return String.Format("PID:{0},PORT:{1} ", mID, mSerialPort.PortName);
+            return String.Format("PID:{0},PORT:{1} ", mPID, mSerialPort.PortName);
         }
 
         public void Start()
@@ -51,12 +51,11 @@ namespace com
                     mSerialPort.Open();
                     mSerialPort.DiscardOutBuffer();
                     mSerialPort.DiscardInBuffer();
-                    SessionOpened(this);
+                    mHeader.SessionOpened(this); //串口打开消息
                     Stream stream = mSerialPort.BaseStream;
                     stream.ReadTimeout = GetReadTimeout(); //设置读超时
-                    IoSerialState state = new IoSerialState(this, stream, mBufferSize, mSerialPort);
-                    ConnectOpened(state); //连接打开
-                    state.BeginRead();
+                    mIoState = new IoSerialState(this, stream, mBufferSize, mSerialPort);
+                    mIoState.BeginRead();
                 }
                 catch (Exception ex)
                 {
@@ -74,7 +73,6 @@ namespace com
                     mSerialPort.DiscardOutBuffer();
                     mSerialPort.DiscardInBuffer();
                     mSerialPort.Close();
-                    SessionClosed(this);
                 }
                 catch (Exception ex)
                 {
@@ -83,25 +81,24 @@ namespace com
             }
         }
 
-        public void SessionClosed(IoHeader header)
+        public void ConnectOpened(IoState state)
         {
-            mHeader.SessionClosed(header);
+            throw new NotImplementedException();
+        }
+
+        public void SessionClosed(int pid)
+        {
+            throw new NotImplementedException();
         }
 
         public void SessionOpened(IoHeader header)
         {
-            mHeader.SessionOpened(header);
+            throw new NotImplementedException();            
         }
 
-        public void ConnectOpened(IoState state)
+        public void ConnectClosed(int pid, int sid)
         {
-            mIoState = state;
-            mHeader.ConnectOpened(state);
-        }
-
-        public void ConnectClosed(IoState state)
-        {
-            mHeader.ConnectClosed(state);
+            mHeader.SessionClosed(pid);
         }
 
         public void MessageReceived(IoState state, byte[] message)
@@ -131,5 +128,11 @@ namespace com
                 mIoState.WriteData(buffer);
             }
         }
+
+        public void WriteData(int sid, byte[] buffer)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

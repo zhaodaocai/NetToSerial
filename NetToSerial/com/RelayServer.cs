@@ -21,16 +21,10 @@ namespace NetToSerial.com
         /// </summary>
         private Dictionary<int, List<int>> mRelays = new Dictionary<int, List<int>>();
 
-        private static int mID = 0;
         private static RelayServer mRelayServer = new RelayServer();
         private RelayServer()
         {
 
-        }
-
-        public static int GetID()
-        {
-            return mID++;
         }
         
         public static RelayServer GetInstance()
@@ -40,23 +34,47 @@ namespace NetToSerial.com
 
         public void AddHeader(IoHeader header)
         {
-            int id = header.GetID();
+            int id = header.GetPID();
             mHeaders[id] = header;
         }
 
-        public void WriteData(int id, byte[] buffer)
+        /// <summary>
+        /// 转发数据
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="buffer"></param>        
+        public void RelayData(int id, byte[] buffer)
         {
-            IoHeader header=null;
+            IoHeader header = null;
             List<int> ids = new List<int>();
+
             if (mRelays.TryGetValue(id, out ids))
             {
-                foreach(int item in ids)
+                foreach (int item in ids)
                 {
                     if (mHeaders.TryGetValue(item, out header))
                     {
                         header.WriteData(buffer);
                     }
                 }
+            }
+        }
+
+        public void WriteData(int pid,byte[] buffer)
+        {
+            IoHeader header;
+            if (mHeaders.TryGetValue(pid,out header))
+            {
+                header.WriteData(buffer);
+            }
+        }
+
+        public void WriteData(int pid,int sid, byte[] buffer)
+        {
+            IoHeader header;
+            if (mHeaders.TryGetValue(pid, out header))
+            {
+                header.WriteData(sid,buffer);
             }
         }
 
@@ -99,18 +117,18 @@ namespace NetToSerial.com
                 {
                     item.Start();
                 }
-
             }
         }
 
         internal void Stop()
         {
+           
             foreach (IoHeader item in mHeaders.Values)
             {
                 item.Stop();
             }
             mHeaders.Clear();
-
+            mRelays.Clear();
             mCanStart.Set();
         }
     }

@@ -12,7 +12,7 @@ namespace com
         private byte[] mReadBuffer;
         private byte[] mWriteBuffer;
         private Stream mStream;
-        protected int mStateID;
+        protected int mSID;
         private AutoResetEvent mCanWrite = new AutoResetEvent(true);
         public IoHeader mHeader;
         private static int GID = 0;
@@ -20,7 +20,7 @@ namespace com
         {
             mReadBuffer = new byte[bufferSize];
             mHeader = header;
-            mStateID=System.Threading.Interlocked.Increment(ref GID);
+            mSID=System.Threading.Interlocked.Increment(ref GID);
         }
 
         public byte[] GetBuffer()
@@ -33,9 +33,14 @@ namespace com
             return mStream;
         }
 
-        public int GetHeaderID()
+        public int GetSID()
         {
-            return mHeader.GetID();
+            return mSID;
+        }
+
+        public int GetPID()
+        {
+            return mHeader.GetPID();
         }
 
         public void SetStream(Stream stream)
@@ -85,13 +90,13 @@ namespace com
                 }
                 else
                 {
-                    state.mHeader.ConnectClosed(state); //连接断开
+                    state.mHeader.ConnectClosed(state.GetPID(), state.GetSID()); //连接断开
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
-                state.mHeader.ConnectClosed(state); //连接断开
+                state.mHeader.ConnectClosed(state.GetPID(), state.GetSID()); //连接断开
             }
         }
 

@@ -13,32 +13,31 @@ namespace com
         private int mPort;
         private IoHeader mHeader;
         private int mBufferSize=1024;
-        private int mID;
+        private int mPID;
         TcpClient mClient=new TcpClient();
 
         IoState mIoState;
-        public IoClient(int id, String ip, int port, IoHeader header)
+        public IoClient(int pid, String ip, int port, IoHeader header)
         {
-            mID = id;
+            mPID = pid;
             mHeader = header;
             mAddress = IPAddress.Parse(ip);
             mPort = port;
         }
 
-        public int GetID()
+        public int GetPID()
         {
-            return mID;
+            return mPID;
         }
 
         public override string ToString()
         {
-            return String.Format("PID:{0},IP:{1}:{2} ",mID, mAddress.ToString(), mPort);
+            return String.Format("PID:{0},IP:{1}:{2} ",mPID, mAddress.ToString(), mPort);
         }
 
         public void Start()
         {
-                IoClientState state = new IoClientState(this, mBufferSize, mClient);
-                mClient.BeginConnect(mAddress, mPort, new AsyncCallback(DoConnectCallBack), state);
+            mClient.BeginConnect(mAddress, mPort, new AsyncCallback(DoConnectCallBack), mClient);
         }
 
         private void DoConnectCallBack(IAsyncResult ar)
@@ -46,12 +45,10 @@ namespace com
             try
             {
                 mClient.EndConnect(ar);
-                IoState state = ar.AsyncState as IoState;
-                ConnectOpened(state);
-
-                //连接后启动异步读数据
-                state.SetStream(mClient.GetStream());
-                state.BeginRead();
+                mIoState = new IoClientState(this, mBufferSize, mClient);
+                mIoState.SetStream(mClient.GetStream());
+                mHeader.SessionOpened(this);
+                mIoState.BeginRead();
             }
             catch(Exception ex)
             {
@@ -71,15 +68,14 @@ namespace com
             }
         }
 
-        public void ConnectClosed(IoState state)
+        public void ConnectClosed(int pid, int sid)
         {
-            mHeader.ConnectClosed(state);
+            mHeader.SessionClosed(mPID);
         }
 
         public void ConnectOpened(IoState state)
         {
-            mIoState = state;
-            mHeader.ConnectOpened(state);
+            throw new NotImplementedException();
         }
 
         public void MessageReceived(IoState state, byte[] message)
@@ -92,9 +88,9 @@ namespace com
             mHeader.MessageSent(state, message);
         }
 
-        public void SessionClosed(IoHeader header)
+        public void SessionClosed(int pid)
         {
-            mHeader.SessionClosed(header);
+            throw new NotImplementedException();
         }
 
         public void SessionException(Object o, Exception ex)
@@ -104,7 +100,7 @@ namespace com
 
         public void SessionOpened(IoHeader header)
         {
-            mHeader.SessionOpened(header);
+            throw new NotImplementedException();
         }
 
         public void SetReadBuffer(int size)
@@ -118,6 +114,11 @@ namespace com
             {
                 mIoState.WriteData(buffer);
             }
+        }
+
+        public void WriteData(int sid,byte[] buffer)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -29,18 +29,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmParam));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.GridServer = new System.Windows.Forms.DataGridView();
-            this.ServerSelect = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.ServerID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColServerIP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColServerPort = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TabParam = new System.Windows.Forms.TabControl();
             this.PageSerial = new System.Windows.Forms.TabPage();
             this.GridSerial = new System.Windows.Forms.DataGridView();
@@ -81,11 +77,15 @@
             this.WndCancel = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.wndSave = new System.Windows.Forms.ToolStripButton();
-            this.SerialSelect = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.SerialID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColSerialPort = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColBaud = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColServerPort = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColServerIP = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ServerID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ServerSelect = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.ColParity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColBaud = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColSerialPort = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SerialID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SerialSelect = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.GridServer)).BeginInit();
             this.TabParam.SuspendLayout();
             this.PageSerial.SuspendLayout();
@@ -122,37 +122,6 @@
             this.GridServer.TabIndex = 1;
             this.GridServer.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.WndGrid_DataError);
             this.GridServer.RowStateChanged += new System.Windows.Forms.DataGridViewRowStateChangedEventHandler(this.GridServer_RowStateChanged);
-            // 
-            // ServerSelect
-            // 
-            this.ServerSelect.DataPropertyName = "ServerSelect";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.ServerSelect.DefaultCellStyle = dataGridViewCellStyle1;
-            this.ServerSelect.HeaderText = "选择";
-            this.ServerSelect.Name = "ServerSelect";
-            // 
-            // ServerID
-            // 
-            this.ServerID.DataPropertyName = "ServerID";
-            this.ServerID.HeaderText = "服务端ID";
-            this.ServerID.Name = "ServerID";
-            // 
-            // ColServerIP
-            // 
-            this.ColServerIP.DataPropertyName = "ColServerIP";
-            this.ColServerIP.HeaderText = "IP地址";
-            this.ColServerIP.MinimumWidth = 150;
-            this.ColServerIP.Name = "ColServerIP";
-            this.ColServerIP.Width = 150;
-            // 
-            // ColServerPort
-            // 
-            this.ColServerPort.DataPropertyName = "ColServerPort";
-            this.ColServerPort.HeaderText = "网络端口";
-            this.ColServerPort.MaxInputLength = 5;
-            this.ColServerPort.Name = "ColServerPort";
-            this.ColServerPort.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.ColServerPort.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // TabParam
             // 
@@ -329,7 +298,7 @@
             this.PageServer.Location = new System.Drawing.Point(4, 26);
             this.PageServer.Name = "PageServer";
             this.PageServer.Padding = new System.Windows.Forms.Padding(3);
-            this.PageServer.Size = new System.Drawing.Size(660, 309);
+            this.PageServer.Size = new System.Drawing.Size(647, 309);
             this.PageServer.TabIndex = 0;
             this.PageServer.Text = "网络服务端";
             this.PageServer.UseVisualStyleBackColor = true;
@@ -340,7 +309,7 @@
             this.PageClient.Location = new System.Drawing.Point(4, 26);
             this.PageClient.Name = "PageClient";
             this.PageClient.Padding = new System.Windows.Forms.Padding(3);
-            this.PageClient.Size = new System.Drawing.Size(660, 309);
+            this.PageClient.Size = new System.Drawing.Size(647, 309);
             this.PageClient.TabIndex = 2;
             this.PageClient.Text = "网络客户端";
             this.PageClient.UseVisualStyleBackColor = true;
@@ -404,7 +373,7 @@
             this.PageRelay.Location = new System.Drawing.Point(4, 26);
             this.PageRelay.Name = "PageRelay";
             this.PageRelay.Padding = new System.Windows.Forms.Padding(3);
-            this.PageRelay.Size = new System.Drawing.Size(660, 309);
+            this.PageRelay.Size = new System.Drawing.Size(647, 309);
             this.PageRelay.TabIndex = 3;
             this.PageRelay.Text = "转发参数";
             this.PageRelay.UseVisualStyleBackColor = true;
@@ -535,23 +504,60 @@
             this.wndSave.Text = "保存";
             this.wndSave.Click += new System.EventHandler(this.wndSave_Click);
             // 
-            // SerialSelect
+            // ColServerPort
             // 
-            this.SerialSelect.DataPropertyName = "SerialSelect";
-            this.SerialSelect.HeaderText = "选择";
-            this.SerialSelect.Name = "SerialSelect";
-            this.SerialSelect.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.ColServerPort.DataPropertyName = "ColServerPort";
+            this.ColServerPort.HeaderText = "网络端口";
+            this.ColServerPort.MaxInputLength = 5;
+            this.ColServerPort.Name = "ColServerPort";
+            this.ColServerPort.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.ColServerPort.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // SerialID
+            // ColServerIP
             // 
-            this.SerialID.DataPropertyName = "SerialID";
-            dataGridViewCellStyle2.Format = "N0";
-            dataGridViewCellStyle2.NullValue = null;
-            this.SerialID.DefaultCellStyle = dataGridViewCellStyle2;
-            this.SerialID.HeaderText = "串口ID";
-            this.SerialID.MaxInputLength = 6;
-            this.SerialID.Name = "SerialID";
-            this.SerialID.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.ColServerIP.DataPropertyName = "ColServerIP";
+            this.ColServerIP.HeaderText = "IP地址";
+            this.ColServerIP.MinimumWidth = 150;
+            this.ColServerIP.Name = "ColServerIP";
+            this.ColServerIP.Width = 150;
+            // 
+            // ServerID
+            // 
+            this.ServerID.DataPropertyName = "ServerID";
+            this.ServerID.HeaderText = "服务端ID";
+            this.ServerID.Name = "ServerID";
+            // 
+            // ServerSelect
+            // 
+            this.ServerSelect.DataPropertyName = "ServerSelect";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.ServerSelect.DefaultCellStyle = dataGridViewCellStyle1;
+            this.ServerSelect.HeaderText = "选择";
+            this.ServerSelect.Name = "ServerSelect";
+            // 
+            // ColParity
+            // 
+            this.ColParity.ContextMenuStrip = this.MenuParity;
+            this.ColParity.DataPropertyName = "ColParity";
+            dataGridViewCellStyle5.NullValue = "0";
+            this.ColParity.DefaultCellStyle = dataGridViewCellStyle5;
+            this.ColParity.HeaderText = "校验方式";
+            this.ColParity.MaxInputLength = 1;
+            this.ColParity.Name = "ColParity";
+            this.ColParity.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.ColParity.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // ColBaud
+            // 
+            this.ColBaud.ContextMenuStrip = this.MenuBaud;
+            this.ColBaud.DataPropertyName = "ColBaud";
+            dataGridViewCellStyle4.NullValue = "0";
+            this.ColBaud.DefaultCellStyle = dataGridViewCellStyle4;
+            this.ColBaud.HeaderText = "波特率";
+            this.ColBaud.MaxInputLength = 6;
+            this.ColBaud.Name = "ColBaud";
+            this.ColBaud.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.ColBaud.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // ColSerialPort
             // 
@@ -566,29 +572,23 @@
             this.ColSerialPort.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.ColSerialPort.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // ColBaud
+            // SerialID
             // 
-            this.ColBaud.ContextMenuStrip = this.MenuBaud;
-            this.ColBaud.DataPropertyName = "ColBaud";
-            dataGridViewCellStyle4.NullValue = "0";
-            this.ColBaud.DefaultCellStyle = dataGridViewCellStyle4;
-            this.ColBaud.HeaderText = "波特率";
-            this.ColBaud.MaxInputLength = 6;
-            this.ColBaud.Name = "ColBaud";
-            this.ColBaud.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.ColBaud.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.SerialID.DataPropertyName = "SerialID";
+            dataGridViewCellStyle2.Format = "N0";
+            dataGridViewCellStyle2.NullValue = null;
+            this.SerialID.DefaultCellStyle = dataGridViewCellStyle2;
+            this.SerialID.HeaderText = "串口ID";
+            this.SerialID.MaxInputLength = 6;
+            this.SerialID.Name = "SerialID";
+            this.SerialID.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
-            // ColParity
+            // SerialSelect
             // 
-            this.ColParity.ContextMenuStrip = this.MenuParity;
-            this.ColParity.DataPropertyName = "ColParity";
-            dataGridViewCellStyle5.NullValue = "0";
-            this.ColParity.DefaultCellStyle = dataGridViewCellStyle5;
-            this.ColParity.HeaderText = "校验方式";
-            this.ColParity.MaxInputLength = 1;
-            this.ColParity.Name = "ColParity";
-            this.ColParity.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.ColParity.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.SerialSelect.DataPropertyName = "SerialSelect";
+            this.SerialSelect.HeaderText = "选择";
+            this.SerialSelect.Name = "SerialSelect";
+            this.SerialSelect.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
             // FrmParam
             // 
@@ -657,10 +657,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem12;
         private System.Windows.Forms.TabPage PageRelay;
         private System.Windows.Forms.DataGridView GridRelay;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn ServerSelect;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ServerID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ColServerIP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ColServerPort;
         private System.Windows.Forms.DataGridViewCheckBoxColumn ClientSelect;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClientID;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColClientIP;
@@ -669,6 +665,10 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ID1;
         private System.Windows.Forms.DataGridViewTextBoxColumn ID2;
         private System.Windows.Forms.ToolStripButton wndSave;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn ServerSelect;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ServerID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColServerIP;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColServerPort;
         private System.Windows.Forms.DataGridViewCheckBoxColumn SerialSelect;
         private System.Windows.Forms.DataGridViewTextBoxColumn SerialID;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColSerialPort;
