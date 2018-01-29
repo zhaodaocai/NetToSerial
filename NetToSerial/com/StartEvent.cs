@@ -8,7 +8,8 @@ namespace com
 {
     public class StartEvent
     {
-       protected AutoResetEvent mCanStart = new AutoResetEvent(true);
+        //protected AutoResetEvent mCanStart = new AutoResetEvent(true);
+        protected ManualResetEvent mCanStart = new ManualResetEvent(true);
 
     }
 }

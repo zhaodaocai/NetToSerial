@@ -162,6 +162,11 @@ namespace NetToSerial
 
         public void Start()
         {
+            if (!RelayServer.GetInstance().CanStart())
+            {
+                return;
+            }
+
             //表集合
             DataSet ds = FrmParam.ReadDataSet();
 

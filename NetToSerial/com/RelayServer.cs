@@ -109,14 +109,22 @@ namespace NetToSerial.com
             }
         }
 
+        /// <summary>
+        /// 是否能启动
+        /// </summary>
+        /// <returns></returns>
+        public bool CanStart()
+        {
+            bool ret = mCanStart.WaitOne(0);
+            return ret;
+        }
+
         internal void Start()
         {
-            if (mCanStart.WaitOne(0))
+            mCanStart.Reset();
+            foreach (IoHeader item in mHeaders.Values)
             {
-                foreach (IoHeader item in mHeaders.Values)
-                {
-                    item.Start();
-                }
+                item.Start();
             }
         }
 
